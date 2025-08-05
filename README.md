@@ -1,15 +1,15 @@
 # git_playground
-A version of pre-commit.sample re-written in Python
+An exploration of re-writing example git hooks in Python
 
 ## Setup
- `.setup.sh`
+Run `.setup.sh` from the root of an initialized git repo with the `git-hooks` directory copied to the root
 
-## Test
-```bash
-git config --bool hooks.allownonascii false
+## Scripts
 
-# create file w/ non-ascii file character
-hы.txt
+### pre-commit.py
+[pre-commit.sample](git-hooks/pre-commit.sample) re-written in [Python](git-hooks/pre-commit.py)
 
-add white spaces and extra lines to end of files
-```
+*Test Cases*
+
+1) set `git config --bool hooks.allownonascii false`, add a non-ascii file, `hы.txt` and notice error message
+2) add white spaces and extra lines to end of files and notice error messages

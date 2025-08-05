@@ -16,15 +16,15 @@ If you know what you are doing you can disable this check using:
   git config hooks.allownonascii true
 '''
 
-return_code = subprocess.run(
+repo_has_no_commits = subprocess.run(
     "git rev-parse --verify HEAD >/dev/null 2>&1",
     shell=True,
-).returncode
+).returncode != SUCCESS_RETURN_CODE
 
 against = 'HEAD'
 
-if return_code != SUCCESS_RETURN_CODE:
-    # Initial commit: diff against an empty tree object
+if repo_has_no_commits:
+    # diff against an empty tree object
     against = subprocess.run(
         "git hash-object -t tree /dev/null",
         shell=True,
@@ -32,28 +32,31 @@ if return_code != SUCCESS_RETURN_CODE:
          text=True
     ).stdout
 
-allow_non_ascii = subprocess.run(
+require_ascii = subprocess.run(
     "git config --type=bool hooks.allownonascii",
     shell=True,
     capture_output=True,
     text=True
-).stdout == 'true\n'
+).stdout != 'true\n'
 
-file_names = subprocess.run(
-    "git diff-index --cached --name-only --diff-filter=A -z " + against,
-    shell=True,
-    capture_output=True,
-    text=True
-).stdout
+if require_ascii:
+    file_names = subprocess.run(
+        "git diff-index --cached --name-only --diff-filter=A -z " + against,
+        shell=True,
+        capture_output=True,
+        text=True
+    ).stdout
 
+    file_names_are_ascii = subprocess.run(
+        "git diff-index --cached --name-only --diff-filter=A -z " + against,
+        shell=True,
+        capture_output=True,
+        text=True
+    ).stdout.isascii()
 
-
-all_ascii = file_names.isascii()
-
-
-if not allow_non_ascii and not all_ascii:
-    print(ASCII_ERROR_MESSAGE, file=sys.stderr)
-    exit(1)
+    if not file_names_are_ascii:
+        print(ASCII_ERROR_MESSAGE, file=sys.stderr)
+        exit(1)
 
 
 error_message = subprocess.run(

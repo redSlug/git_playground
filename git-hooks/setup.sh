@@ -1,3 +1,3 @@
 #!/bin/sh
 
-ln -s ../../git-hooks/pre-commit.py ../.git/hooks/pre-commit
+ln -s ../../git-hooks/pre-commit.py .git/hooks/pre-commit
