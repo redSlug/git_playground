@@ -40,13 +40,6 @@ require_ascii = subprocess.run(
 ).stdout != 'true\n'
 
 if require_ascii:
-    file_names = subprocess.run(
-        "git diff-index --cached --name-only --diff-filter=A -z " + against,
-        shell=True,
-        capture_output=True,
-        text=True
-    ).stdout
-
     file_names_are_ascii = subprocess.run(
         "git diff-index --cached --name-only --diff-filter=A -z " + against,
         shell=True,
